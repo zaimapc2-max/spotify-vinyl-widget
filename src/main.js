@@ -3,8 +3,12 @@ const path = require("path");
 
 function createWindow() {
     const window = new BrowserWindow({
-        width: 1000,
-        height: 700
+        width: 320,
+        height: 320,
+        frame: false,
+        transparent: true,
+        alwaysOnTop: true,
+        resizable: false
     });
 
     window.loadFile(path.join(__dirname, "index.html"));

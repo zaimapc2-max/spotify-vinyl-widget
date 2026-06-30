@@ -1,9 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Vinyl Widget</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Vinyl Widget</title>
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            overflow: hidden;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .disc {
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: #222;
+    animation: spin 3s linear infinite;
+    position: relative;
+}
+
+.disc::after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    width: 4px;
+    height: 40px;
+    background: white;
+    transform: translateX(-50%);
+}
+
+        .disc.paused {
+            animation-play-state: paused;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 </head>
+
 <body>
-  <h1>Hello Vinyl</h1>
+    <div class="disc"></div>
+
+    <script src="app.js"></script>
 </body>
 </html>
