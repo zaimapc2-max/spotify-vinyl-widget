@@ -21,44 +21,74 @@
             align-items: center;
         }
 
-        .disc {
+        .disc-container {
+            position: relative;
+            width: 260px;
+            height: 260px;
+        }
+
+        .album-art {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .vinyl-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 260px;
     height: 260px;
-    border-radius: 50%;
-    background: #222;
-    animation: spin 3s linear infinite;
-    position: relative;
 }
 
-.disc::after {
-    content: "";
+.controls {
     position: absolute;
-    top: 10px;
+    bottom: 10px;
     left: 50%;
-    width: 4px;
-    height: 40px;
-    background: white;
     transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
-        .disc.paused {
-            animation-play-state: paused;
-        }
+.disc-container:hover .controls {
+    opacity: 1;
+}
 
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
+.controls button {
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+}
 
-            to {
-                transform: rotate(360deg);
-            }
-        }
+.controls button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
     </style>
 </head>
 
 <body>
-    <div class="disc"></div>
+    <div class="disc-container">
+        <div class="album-art"></div>
+        <img class="vinyl-ring" src="../assets/frames/ring-0.png">
+         <div class="controls">
+        <button class="btn-prev">⏮</button>
+        <button class="btn-playpause">⏸</button>
+        <button class="btn-next">⏭</button>
+    </div>
+    </div>
+   
 
     <script src="app.js"></script>
 </body>
