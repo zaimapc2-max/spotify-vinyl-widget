@@ -21,21 +21,23 @@ playPauseBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     isPlaying = !isPlaying;
     playPauseBtn.textContent = isPlaying ? "⏸" : "▶";
+    window.spotifyAPI.sendControl(isPlaying ? "play" : "pause");
 });
 
 nextBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    console.log("next");
+    window.spotifyAPI.sendControl("next");
 });
 
 prevBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    console.log("prev");
+    window.spotifyAPI.sendControl("prev");
 });
 
 discContainer.addEventListener("click", () => {
     isPlaying = !isPlaying;
     playPauseBtn.textContent = isPlaying ? "⏸" : "▶";
+    window.spotifyAPI.sendControl(isPlaying ? "play" : "pause");
 });
 
 playPauseBtn.textContent = isPlaying ? "⏸" : "▶";

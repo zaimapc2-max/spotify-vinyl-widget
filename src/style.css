@@ -16,6 +16,7 @@ body {
             position: relative;
             width: 260px;
             height: 260px;
+            -webkit-app-region: drag;
         }
 
         .album-art {
@@ -47,6 +48,7 @@ body {
     gap: 12px;
     opacity: 0;
     transition: opacity 0.3s ease;
+    -webkit-app-region: no-drag;
 }
 
 .disc-container:hover .controls {
