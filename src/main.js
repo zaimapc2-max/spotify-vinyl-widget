@@ -11,17 +11,20 @@ const {
     exchangeCodeForToken
 } = require("./auth/spotify-auth");
 
+let mainWindow;
+
 function createWindow() {
-    const window = new BrowserWindow({
-        width: 320,
-        height: 320,
+     mainWindow = new BrowserWindow({
+        width: 380,
+        height: 380,
         frame: false,
         transparent: true,
         alwaysOnTop: true,
-        resizable: false
+        resizable: false,
+        webPreferences: { preload: path.join(__dirname, "preload.js")}
     });
 
-    window.loadFile(path.join(__dirname, "index.html"));
+    mainWindow.loadFile(path.join(__dirname, "index.html"));
 }
 
 app.whenReady().then(() => {
@@ -38,7 +41,7 @@ app.whenReady().then(() => {
 
         console.log(tokenData);
         accessToken = tokenData.access_token;
-        setTimeout(getCurrentTrack, 2000);
+        setInterval(getCurrentTrack, 2000);
     });
 
     shell.openExternal(authUrl);
@@ -63,5 +66,12 @@ async function getCurrentTrack() {
     }
 
     const data = await response.json();
-    console.log("Current track data:", data);
+   const track = {
+    name: data.item.name,
+    artist: data.item.artists[0].name,
+    albumArt: data.item.album.images[0].url,
+    isPlaying: data.is_playing
+    };
+    mainWindow.webContents.send("track-update", track);
 }
+

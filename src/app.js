@@ -50,6 +50,14 @@ function updateDisc(track) {
     albumArt.style.backgroundImage = `url(${track.albumArt})`;
     albumArt.style.backgroundSize = "cover";
     albumArt.style.backgroundPosition = "center";
+    document.querySelector(".track-name").textContent = track.name;
+    document.querySelector(".track-artist").textContent = track.artist;
 }
 
 updateDisc(mockTrack);
+
+window.spotifyAPI.onTrackUpdate((track) => {
+    updateDisc(track);
+    isPlaying = track.isPlaying;
+    playPauseBtn.textContent = isPlaying ? "⏸" : "▶";
+});
