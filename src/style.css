@@ -1,23 +1,24 @@
-body {
-            margin: 0;
+
+    body {
+             margin: 0;
             width: 100%;
             height: 100%;
             background: transparent;
             overflow: hidden;
-        }
-
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    padding: 10px;
+}
 
         .disc-container {
-            position: relative;
-            width: 260px;
-            height: 260px;
-            -webkit-app-region: drag;
-        }
+    -webkit-app-region: drag;
+    position: relative;
+    width: 260px;
+    height: 260px;
+}
 
         .album-art {
     position: absolute;
@@ -40,6 +41,7 @@ body {
 }
 
 .controls {
+    -webkit-app-region: no-drag;
     position: absolute;
     bottom: 10px;
     left: 50%;
@@ -48,7 +50,6 @@ body {
     gap: 12px;
     opacity: 0;
     transition: opacity 0.3s ease;
-    -webkit-app-region: no-drag;
 }
 
 .disc-container:hover .controls {
@@ -69,12 +70,12 @@ body {
 .controls button:hover {
     background: rgba(255, 255, 255, 0.2);
 }
-
 .track-info {
-    text-align: center;
-    margin-top: 8px;
+    -webkit-app-region: no-drag;
+    text-align: left;
     color: white;
     font-family: sans-serif;
+    max-width: 150px;
 }
 
 .track-name {
@@ -84,7 +85,7 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 240px;
+    max-width: 150px;
 }
 
 .track-artist {

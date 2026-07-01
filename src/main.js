@@ -1,4 +1,4 @@
-const { app, BrowserWindow, shell, ipcMain } = require("electron");
+const { app, BrowserWindow, shell, ipcMain, Tray, Menu } = require("electron");
 const path = require("path");
 
 let accessToken = null;
@@ -8,15 +8,18 @@ const {
     generateCodeChallenge,
     getAuthURL,
     startCallbackServer,
-    exchangeCodeForToken
+    exchangeCodeForToken,
+    saveTokens,
+    loadTokens,
+    refreshAccessToken
 } = require("./auth/spotify-auth");
 
 let mainWindow;
 
 function createWindow() {
     mainWindow = new BrowserWindow({
-        width: 380,
-        height: 380,
+        width: 520,
+    height: 320,
         frame: false,
         transparent: true,
         alwaysOnTop: true,
@@ -25,21 +28,88 @@ function createWindow() {
     });
     mainWindow.loadFile(path.join(__dirname, "index.html"));
 }
+let tray;
 
-app.whenReady().then(() => {
-    createWindow();
+function createTray() {
+    console.log("Creating tray...");
+    tray = new Tray(path.join(__dirname, "../assets/tray-icon.png"));
 
-    const verifier = generateCodeVerifier();
-    const challenge = generateCodeChallenge(verifier);
-    const authUrl = getAuthURL(challenge);
+    const contextMenu = Menu.buildFromTemplate([
+        {
+            label: "Show/Hide Widget",
+            click: () => {
+                if (mainWindow.isVisible()) {
+                    mainWindow.hide();
+                } else {
+                    mainWindow.show();
+                }
+            }
+        },
+        { type: "separator" },
+        {
+            label: "Quit",
+            click: () => app.quit()
+        }
+    ]);
 
-    startCallbackServer(async (code) => {
-        const tokenData = await exchangeCodeForToken(code, verifier);
-        accessToken = tokenData.access_token;
-        setInterval(getCurrentTrack, 2000);
+    tray.setToolTip("Spotify Vinyl Widget");
+
+    // On Windows, left click toggles, right click shows menu
+    tray.on("click", () => {
+        if (mainWindow.isVisible()) {
+            mainWindow.hide();
+        } else {
+            mainWindow.show();
+        }
     });
 
-    shell.openExternal(authUrl);
+    tray.on("right-click", () => {
+        tray.popUpContextMenu(contextMenu);
+    });
+}
+app.whenReady().then(async () => {
+    createWindow();
+    createTray();
+
+    const saved = loadTokens();
+
+    if (saved) {
+        console.log("Found saved tokens, refreshing...");
+        const tokenData = await refreshAccessToken(saved.refreshToken);
+        accessToken = tokenData.access_token;
+
+        // Save updated tokens
+        saveTokens(accessToken, saved.refreshToken);
+        setInterval(getCurrentTrack, 2000);
+
+        // Also refresh token every 50 minutes automatically
+        setInterval(async () => {
+            const refreshed = await refreshAccessToken(saved.refreshToken);
+            accessToken = refreshed.access_token;
+            console.log("Token auto-refreshed");
+        }, 50 * 60 * 1000);
+
+    } else {
+        console.log("No saved tokens, starting OAuth...");
+        const verifier = generateCodeVerifier();
+        const challenge = generateCodeChallenge(verifier);
+        const authUrl = getAuthURL(challenge);
+
+        startCallbackServer(async (code) => {
+            const tokenData = await exchangeCodeForToken(code, verifier);
+            accessToken = tokenData.access_token;
+
+            // Save tokens for next launch
+            saveTokens(accessToken, tokenData.refresh_token);
+            setInterval(getCurrentTrack, 2000);
+        });
+
+        shell.openExternal(authUrl);
+    }
+});
+
+app.on("window-all-closed", (e) => {
+    e.preventDefault();
 });
 
 async function getCurrentTrack() {
